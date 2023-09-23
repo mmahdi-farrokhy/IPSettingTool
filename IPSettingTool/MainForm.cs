@@ -25,7 +25,9 @@ namespace IPSettingTool
         {
             try
             {
-                currentIPTxt.Text = NetworkConfiguration.GetLocalIPv4Address(adapterNameCombo.SelectedItem.ToString());
+                var adapterName = adapterNameCombo.SelectedItem.ToString() ?? "";
+                currentIPTxt.Text = NetworkConfiguration.GetLocalIPv4Address(adapterName);
+                currentGatewayTxt.Text = NetworkConfiguration.GetGatewayAddress(adapterName);
             }
             catch (SystemNotConnectedToNetWorkException)
             {
@@ -36,14 +38,22 @@ namespace IPSettingTool
 
         private void setNewIPBtn_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(newIPTxt.Text))
-                MessageBox.Show("New IP address is empty", "Invalid IP", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            if (string.IsNullOrEmpty(newIPTxt.Text) || string.IsNullOrEmpty(newGatewayTxt.Text))
+            {
+                MessageBox.Show("Enter both new IP and gateway", "Invalid Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             else
             {
-                var adapterName = adapterNameCombo.SelectedItem.ToString();
-                NetworkConfiguration.SetNewStaticIPAddress(adapterName, newIPTxt.Text.Trim());
-                newIPTxt.Text = "";
-                currentIPTxt.Text = NetworkConfiguration.GetLocalIPv4Address(adapterName);
+                var adapterName = adapterNameCombo.SelectedItem.ToString() ?? "";
+                var newGateway = newGatewayTxt.Text.Trim();
+                var newIP = newIPTxt.Text.Trim();
+                //NetworkConfiguration.SetNewGatewayAddress(adapterName, newGateway);
+                //NetworkConfiguration.SetNewStaticIPAddress(adapterName, newIP);
+                //newIPTxt.Text = "";
+                //newGatewayTxt.Text = "";
+                //currentIPTxt.Text = NetworkConfiguration.GetLocalIPv4Address(adapterName);
+                //currentGatewayTxt.Text = NetworkConfiguration.GetGatewayAddress(adapterName);
+                NetworkConfiguration.SetIP(adapterName,newIP,newGateway);
             }
         }
     }
